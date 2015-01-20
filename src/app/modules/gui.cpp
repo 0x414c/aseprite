@@ -270,34 +270,15 @@ void gui_feedback()
 // Refresh the UI display, font, etc.
 void gui_setup_screen(bool reload_font)
 {
-  bool regen = false;
   bool reinit = false;
 
   main_display->setScale(screen_scaling);
   ui::set_display(main_display);
 
-  // Update guiscale factor
-  int old_guiscale = guiscale();
-  CurrentTheme::get()->setScale(
-    (screen_scaling == 1 &&
-      ui::display_w() > 512 &&
-      ui::display_h() > 256) ? 2: 1);
-
-  // If the guiscale have changed
-  if (old_guiscale != guiscale()) {
-    reload_font = true;
-    regen = true;
-  }
-
-  if (reload_font) {
-    reload_default_font();
-    reinit = true;
-  }
-
-  // Regenerate the theme
-  if (regen) {
-    CurrentTheme::get()->regenerate();
-    reinit = true;
+  // Reload default font only for scales greater than 1:1
+  if (reload_font && (screen_scaling > 1)) {
+	reload_default_font();
+	reinit = true;
   }
 
   if (reinit)
